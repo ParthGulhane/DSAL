@@ -1,0 +1,158 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+class Set {
+    vector<int> elements;
+
+    bool exists(int val){
+        for (int i : elements){
+            if (i == val) return true;
+        }
+
+        return false;
+    }
+
+    public:
+        void insert(int val){
+            if (!exists(val)){
+                elements.push_back(val);
+            }
+        }
+
+        void remove(int val){
+            if (exists(val)){
+                for (int i = 0; i < elements.size(); i++){
+                    if (elements[i] == val){
+                        for (int j = i; j < elements.size() - 1; j++){
+                            elements[j] = elements[j + 1];
+                        }
+
+                        elements.pop_back();
+                        break;
+                    }
+                }
+            }
+        }    
+
+        bool contains(int val){
+            return exists(val);
+        }
+
+        int size(){
+            return elements.size();
+        }
+
+        bool isEmpty(){
+            return !elements.size();
+        }
+
+        void clear(){
+            elements.clear();
+        }
+
+        Set unionWith(Set& other){
+            Set result;
+
+            for (int val : elements) result.insert(val);
+            for (int val : other.elements) result.insert(val);
+
+            return result;
+        }
+
+        Set intersectionWith(Set& other) {
+            Set result;
+
+            for (int val : elements){
+                if (other.contains(val)){
+                    result.insert(val);
+                }
+            }
+
+            return result;
+        }
+
+        Set differenceSet(Set& other){
+            Set result;
+
+            for (int val : elements){
+                if (!other.contains(val)) result.insert(val);
+            }
+
+            return result;
+        }
+
+        void display(){
+            cout << "{ ";
+            for (int val : elements){
+                cout << val << ' ';
+            }
+            cout << " }" << endl;
+        }
+
+        bool isSubsetOf(Set& other){
+            for (int val : elements){
+                if (!other.contains(val)) return false;
+            }
+
+            return true;
+        }
+
+        vector<int>::iterator begin(){
+            return elements.begin();
+        }
+
+        vector<int>::iterator end(){
+            return elements.end();
+        }
+};
+
+int main(){
+    Set A,B;
+
+    int a,b;
+    cout << "Enter number of elements in Set A: "; cin >> a;
+    cout << "Enter number of elements in Set B: "; cin >> b;
+
+    for (int i = 0; i < a; i++){
+        int val;
+        cout << "Enter unique element for set A: "; cin >> val;
+        A.insert(val);
+    }
+
+    for (int i = 0; i < b; i++){
+        int val;
+        cout << "Enter unique element for set B: "; cin >> val;
+        B.insert(val);
+    }
+
+    cout << "\nSet A: ";
+    A.display();
+    cout << endl;
+
+    cout << "\nSet B: ";
+    B.display();
+    cout << endl;
+
+    Set U = A.unionWith(B);
+    cout << "Union (A,B): ";
+    U.display();
+
+    Set I = A.intersectionWith(B);
+    cout << "Intersection (A,B): ";
+    I.display();
+
+    Set D = A.differenceSet(B);
+    cout << "Difference (A - B): ";
+    D.display();
+
+    A.remove(2);
+    cout << "A after removing 2: ";
+    A.display();
+
+    A.clear();
+    cout << "A after clearing: ";
+    A.display();
+
+}
