@@ -1,0 +1,169 @@
+#include <iostream>
+#include <string>
+#include <queue>
+#include <vector>
+
+using namespace std;
+
+class Node {
+    public:
+        int val;
+        Node* left;
+        Node* right;
+
+        Node(int val){
+            this->val = val;
+            this->left = this->right = nullptr;
+        }
+};
+
+class BST {
+    private:
+        Node* root;
+    
+    public:
+        BST(){
+            this->root = nullptr;
+        }
+
+        Node* insertNode(Node* root, int val){
+            if (!root) return new Node(val);
+
+            if (val < root->val){
+                root->left = insertNode(root->left, val);  
+            }
+            else if (val > root->val){
+                root->right = insertNode(root->right, val);
+            }
+            
+            return root;
+        }
+
+        Node* getRoot(){
+            return this->root;
+        }
+
+        void bfs(Node* root){
+            if (!root) return;
+
+            Node* curr = root;
+            queue<Node*> q;
+            q.push(curr);
+
+            cout << "Level Order Traversal: "; 
+            while (!q.empty()){
+                Node* node = q.front();
+                q.pop();
+
+                cout << node->val << ' ';
+
+                if (node->left) q.push(node->left);
+                if (node->right) q.push(node->right);
+            }
+            cout << endl;
+        } 
+
+        int height(Node* root){
+            if (!root) return -1;
+            return max(height(root->left), height(root->right)) + 1;
+        } 
+
+        int getMinValue(Node* root){
+            Node* curr = root;
+            while (curr && curr->left) curr = curr->left;
+            return curr->val;
+        }
+
+        Node* invertTree(Node* root){
+            if (!root) return nullptr;
+
+            Node* newRoot = new Node(root->val);
+            newRoot->left = invertTree(root->right);
+            newRoot->right = invertTree(root->left);
+
+            return newRoot; 
+        }
+
+        bool search(Node* root, int val){
+            if (!root) return false;
+            
+            if (val < root->val) {
+                return search(root->left, val);
+            }
+            else if (val > root->val){
+                return search(root->right, val); 
+            }
+            else {
+                cout << "Give value is present in the tree" << endl;
+                return true;
+            }
+        }
+
+        void setRoot(Node* root){
+            this->root = root;
+        }
+};
+
+int main(){
+    BST tree;
+    Node* root = tree.getRoot();
+
+    int n;
+    cout << "Enter number of nodes: "; cin >> n;
+
+    vector<int> nodes;
+    for (int i = 0; i < n; i++){
+        int temp;
+        cout << "Enter node " << i + 1 << ": "; cin >> temp;
+        nodes.push_back(temp);
+    }
+
+    for (int i = 0; i < n; i++){
+        root = tree.insertNode(root, nodes[i]);
+    }
+
+    tree.setRoot(root);
+
+    int choice;
+
+    do {
+        cout << "\n---BST Operations---\n";
+        cout << "1. Display" << endl;
+        cout << "2. Invert Tree" << endl;
+        cout << "3. Search Value" << endl;
+        cout << "4. Number of nodes in the longest path" << endl;
+        cout << "5. Minimum Value" << endl;
+        cout << "6. Exit" << endl;
+        cin >> choice;
+        int val;
+
+        switch(choice) {
+            case 1:
+                tree.bfs(tree.getRoot());
+                break;
+            case 2: {
+                Node* inverted_root = tree.invertTree(tree.getRoot());
+                tree.bfs(inverted_root);
+                break;    
+            }                
+            case 3:
+                cout << "Enter value to search: "; cin >> val;
+                if (!tree.search(tree.getRoot(), val)) {
+                    cout << "Node not found!" << endl;
+                }
+                break;    
+            case 4:
+                cout << (tree.height(tree.getRoot()) + 1) << endl;   
+                break;
+            case 5:
+                cout << tree.getMinValue(tree.getRoot()) << endl;
+                break;                
+            case 6:
+                cout << "Thank you!" << endl;
+                break;
+            default:
+                cout << "Invalid Choice!" << endl;
+                break;
+        }                                                
+    } while (choice != 6);
+}
