@@ -1,0 +1,147 @@
+#include <iostream>
+#include <bits/stdc++.h>
+
+using namespace std;
+
+class OBST {
+    int n;
+    vector<int> keys;
+    vector<float> prob;
+    vector<vector<float>> weight;
+    vector<vector<float>> cost;
+    vector<vector<int>> root;
+
+    public:
+        void init();
+        void buildOBST();
+        void printTree();
+        void displayMatrix(vector<vector<int>>& arr, string label);
+        void displayMatrix(vector<vector<float>>& arr, string label);
+};
+
+void OBST::init(){
+    // Input V,keys,probs
+    // Resize vectors
+    cout << "Enter number of nodes: ";
+    cin >> n;
+
+    keys.resize(n + 1);
+    prob.resize(n + 1);
+    weight.resize(n + 1, vector<float>(n + 1, 0));
+    cost.resize(n + 1, vector<float>(n + 1, 0));
+    root.resize(n + 1, vector<int>(n + 1, 0));
+
+    cout << "Enter " << n << " keys: \n";
+    for (int i = 1; i <= n; i++){
+        cin >> keys[i];
+    }
+    
+    cout << "Enter " << n << " search probabilities: \n";
+    for (int i = 1; i <= n; i++){
+        cin >> prob[i];
+    }     
+}
+
+void OBST::buildOBST(){
+    // Initialize level 1,2
+    // Build
+
+    // Level 0
+    for (int i = 0; i <= n; i++){
+        cost[i][i] = 0;
+        weight[i][i] = 0;
+    }
+    
+    // Level 1
+    for (int i = 0; i < n; i++){
+        cost[i][i + 1] = prob[i + 1]; 
+        weight[i][i + 1] = prob[i + 1];
+        root[i][i + 1] = i + 1;
+    }
+
+    for (int len = 2; len <= n; len++){
+        for (int i = 0; i <= n - len; i++){
+            int j = i + len;
+
+            weight[i][j] = weight[i][j - 1] + prob[j];
+            cost[i][j] = numeric_limits<float>::max();
+            
+            for (int k = root[i][j - 1]; k <= root[i + 1][j]; k++){
+                float c = cost[i][k - 1] + cost[k][j] + weight[i][j];
+
+                if (c < cost[i][j]){
+                    cost[i][j] = c;
+                    root[i][j] = k;  
+                }
+            }
+        }
+    }
+
+    displayMatrix(cost, "Cost Matrix");
+    displayMatrix(root, "Root Matrix");
+}
+
+void OBST::displayMatrix(vector<vector<int>>& arr, string label){
+    cout << endl << label << ":" << endl;
+    for (int i = 0; i <= n; i++){
+        for (int j = 0; j <= n; j++){
+            cout << setw(5) << arr[i][j];
+        }
+        cout << endl;
+    }
+}
+
+void OBST::displayMatrix(vector<vector<float>>& arr, string label){
+    cout << endl << label << ":" << endl;
+    for (int i = 0; i <= n; i++){
+        for (int j = 0; j <= n; j++){
+            cout << setw(5) << arr[i][j];
+        }
+        cout << endl;
+    }
+}
+
+void OBST::printTree(){
+    cout << endl << "Optimal Binary Search Tree Structure:" << endl;
+    cout << "Root of OBST: " << keys[root[0][n]] << endl;
+    cout << "Minimum Cost: " << cost[0][n] << endl;
+
+    cout << endl << "NODE\tLEFT\tRIGHT" << endl;
+
+    queue<pair<int, int>> q;
+    q.push({0,n});
+
+    while (!q.empty()){
+        int i = q.front().first;
+        int j = q.front().second;
+        q.pop();
+        
+        int r = root[i][j];
+
+        if (r == 0 || r > n) continue;
+        
+        int left = root[i][r - 1];
+        int right = root[r][j];
+
+        cout << keys[r] << "\t";
+        
+        if (left > 0){
+            cout << keys[left] << "\t";
+            q.push({i, r - 1});
+        }
+        else cout << "-\t";
+        
+        if (right > 0){
+            cout << keys[right] << endl;
+            q.push({r, j});
+        }
+        else cout << "-" << endl;
+    }
+} 
+
+int main(){
+    OBST tree;
+    tree.init();
+    tree.buildOBST();
+    tree.printTree();
+}
