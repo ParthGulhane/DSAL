@@ -1,0 +1,207 @@
+#include<iostream>
+#include<string>
+using namespace std;
+
+class node{
+    public:
+    string data;
+    node* left;
+    node* right;
+    
+    node(){
+        left=NULL;
+        right=NULL;
+    }
+};
+
+class tree{
+    public:
+    int count;
+    node* root;
+    
+    tree(){
+        root=NULL;
+        count=0;
+    }
+    
+    node* create(int n){
+        if(count>=n){
+            return NULL;
+        }
+        
+        string x;
+        cout<<"Enter section/subsection name (enter -1 for no node): ";
+        cin.ignore();
+        getline(cin, x);
+        
+        if(x=="-1"){
+            return NULL;
+        }
+        
+        node* p= new node;
+        p->data=x;
+        count++;
+        
+        if(count<n){
+            cout<<"Do you want to create the left child of section/subsection \n"<<x<<"\"? (1 for Yes, -1 for No): ";
+            int choice;
+            cin>>choice;
+            if(choice!=-1){
+                cout<<"Creating left child of \n"<<x<<"\n"<<endl;
+                p->left=create(n);
+            }
+        }
+        
+        if(count<n){
+            cout<<"Do you want to creat the right child of section/ subsection \n"<<x<<"? (1 for Yes, -1 for No): ";
+            int choice;
+            cin>>choice;
+            if(choice!=-1){
+                cout<<"Creating right child of \""<<x<<"\""<<endl;
+                p->right=create(n);
+            }
+        }
+        
+        return p;
+    }
+};
+
+class stacknode {
+    public:
+    node *t;
+    int flag;
+};
+
+class stack{
+    stacknode a[10];
+    int top;
+    public:
+    stack(){
+        top=-1;
+    }
+    
+    void push(stacknode s){
+        top++;
+        a[top]=s;
+    }
+    
+    stacknode pop(){
+        stacknode s;
+        s=a[top];
+        top--;
+        return s;
+    }
+    
+    bool empty(){
+        return top==-1;
+    }
+    
+    void nonrec_post(node* t){
+        stack s1;
+        stacknode st;
+        while(t!=NULL){
+            st.t=t;
+            st.flag=0;
+            s1.push(st);
+            t=t->left;
+        }
+        while(!s1.empty()){
+            st=s1.pop();
+            t=st.t;
+            if(st.flag==1){
+                cout<<t->data<<"-> ";
+            }
+            else{
+                st.t=t;
+                st.flag=1;
+                s1.push(st);
+                t=t->right;
+                
+                while(t!=NULL){
+                    st.t=t;
+                    st.flag=0;
+                    s1.push(st);
+                    t=t->left;
+                }
+            }
+        }
+    }
+    
+    void nonrec_pre(node* t){
+        if(t==NULL) return;
+        
+        stack s;
+        stacknode st;
+        
+        st.t=t;
+        s.push(st);
+        
+        while(!s.empty()){
+            st=s.pop();
+            t=st.t;
+            
+            cout<<t->data<<"-> ";
+            
+            if(t->right!=NULL){
+                st.t=t->right;
+                s.push(st);
+            }
+            
+            if(t->left!=NULL){
+                st.t=t->left;
+                s.push(st);
+            }
+        }
+    }
+    
+    void nonrec_inorder(node*t){
+        stack s1;
+        stacknode st;
+        while(t!=NULL){
+            st.t=t;
+            st.flag=0;
+            s1.push(st);
+            t=t->left;
+        }
+        while(!s1.empty()){
+            st=s1.pop();
+            t=st.t;
+            if(st.flag==0){
+                cout<<t->data<< "-> ";
+            }
+            else{
+                st.t=t;
+                st.flag=1;
+                s1.push(st);
+                t=t->right;
+                
+                while(t!=NULL){
+                    st.t=t;
+                    st.flag=0;
+                    s1.push(st);
+                    t=t->left;
+                }
+            }
+        }
+    }
+};
+
+int main(){
+    tree t;
+    int n;
+    cout<<"Enter the number of section/subsection you want to enter: ";
+    cin>>n;
+    t.root=t.create(n);
+    cout<<"Tree creation completed with "<<t.count<<" section/subsection."<<endl;
+    stack s;
+    cout<<"Preorder Traversal: ";
+    s.nonrec_pre(t.root);
+    cout<<endl;
+    cout<<"Inorder Traversal: ";
+    s.nonrec_inorder(t.root);
+    cout<<endl;
+    cout<<"Postorder Traversal; ";
+    s.nonrec_post(t.root);
+    cout<<endl;
+    return 0;
+}
