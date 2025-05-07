@@ -1,0 +1,149 @@
+#include <iostream>
+using namespace std;
+
+class node {
+public:
+    int data;
+    node* left;
+    node* right;
+};
+
+class tree {
+private:
+    node* root;
+public:
+    tree() { root = NULL; }
+
+    void create() {
+        char ans = 'y';
+        do {
+            node* New = new node;
+            cout << "Enter element: ";
+            cin >> New->data;
+            New->left = NULL;
+            New->right = NULL;
+
+            if (root == NULL)
+                root = New;
+            else
+                insert(root, New);
+
+            cout << "Do you want to enter more elements? (y/n)" << endl;
+            cin >> ans;
+        } while (ans == 'y' || ans == 'Y');
+    }
+    
+    void insert(node* root, node* New) {
+    	
+        if (New->data > root->data) {
+            if (root->right == NULL)
+                root->right = New;
+            else
+                insert(root->right, New);
+        }
+        else if (New->data < root->data) {
+            if (root->left == NULL)
+                root->left = New;
+            else
+                insert(root->left, New);
+        }
+    }
+
+    int height(node* root) {
+        if (root == NULL)
+            return 0;
+        if (root->left == NULL && root->right == NULL)
+            return 1;
+        int hl = 1 + height(root->left);
+        int hr = 1 + height(root->right);
+        if (hl >= hr)
+            return hl;
+        else
+            return hr;
+    }
+
+    int min_data_value(node* root) {
+        while (root->left != NULL) {
+            root = root->left;
+        }
+        return root->data;
+    }
+
+    void swap(node* root) {
+        if (root != NULL) {
+            node* temp = root->left;
+            root->left = root->right;
+            root->right = temp;
+    
+            if (root->left != NULL || root->right != NULL) {
+                cout << "Swapped: ";
+                if (root->left != NULL) cout << root->left->data;
+                else cout << "NULL";
+                cout << " <-> ";
+                if (root->right != NULL) cout << root->right->data;
+                else cout << "NULL";
+                cout << endl;
+            }
+    
+            swap(root->left);
+            swap(root->right);
+        }
+    }
+     
+    void search(node* root, int key) {
+        if (root == NULL) {
+            cout << "Element not found." << endl;
+            return;
+        }
+        if (root->data == key) {
+            cout << "Element found: " << root->data << endl;
+            return;
+        }
+        if (key < root->data)
+            search(root->left, key);
+        else
+            search(root->right, key);
+    }
+
+    void menu() {
+        int ch;
+        do {
+            cout << "\nEnter choice: \n1. Create tree \n2. Height of tree \n3. Minimum data in tree \n4. Swap \n5. Search \n6. Exit\n";
+            cin >> ch;
+
+            switch (ch) {
+                case 1:
+                    create();
+                    break;
+                case 2:
+                    cout << "Height: " << height(root) << endl;
+                    break;
+                case 3:
+                    cout << "Minimum data value found in tree: " << min_data_value(root) << endl;
+                    break;
+                case 4:
+                    swap(root);
+                    cout << "Tree after swapping." << endl;
+                    break;
+                case 5: {
+                    int key;
+                    cout << "Enter element to search: ";
+                    cin >> key;
+                    search(root, key);
+                    break;
+                }
+                case 6:
+                    cout << "Exiting..." << endl;
+                    break;
+                default:
+                    cout << "Invalid choice!" << endl;
+            }
+        } while (ch != 6);
+    }
+};
+
+int main() {
+    tree t;
+    t.menu();
+    return 0;
+}
