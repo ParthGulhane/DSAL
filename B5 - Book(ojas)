@@ -1,0 +1,79 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+typedef vector<int> vi;
+
+class Node {
+    public:
+        string name;
+        vector<Node*> children;
+
+        Node(string name){
+            this->name = name;
+        }
+
+        void addChild(Node* child){
+            children.push_back(child);
+        }
+};
+
+void displayTree(Node* node, int level = 0){
+    for (int i = 0; i < level; i++) cout << "   "; 
+    cout << "- " << node->name << endl;
+    
+    for (Node* child : node->children){
+        displayTree(child, level + 1);
+    }
+}
+
+int main(){
+    string bookName;
+    cout << "Enter Book Name: "; getline(cin, bookName);
+    Node* book = new Node("Book: " + bookName);
+
+    int chapters;
+    cout << "Enter number of chapters: "; cin >> chapters; 
+    cin.ignore();
+
+    for (int i = 0; i < chapters; i++){
+        string chapterName;
+        cout << "Enter name of chapter " << i + 1 << ": "; getline(cin, chapterName);
+
+        Node* chapter = new Node("Chapter: " + chapterName);
+
+        int sections;
+        cout << "Enter number of sections in \"" << chapterName << "\": "; cin >> sections;
+        cin.ignore();
+        
+        for (int j = 0; j < sections; j++){
+            string sectionName;
+            cout << "Enter name of section " << i + 1 << ": "; getline(cin, sectionName);
+    
+            Node* section = new Node("Section: " + sectionName);
+    
+            int subSections;
+            cout << "Enter number of subSections in \"" << sectionName << "\": "; cin >> subSections;
+            cin.ignore();
+            
+            for (int k = 0; k < subSections; k++){
+                string subSectionName;
+                cout << "Enter name of subSection " << i + 1 << ": "; getline(cin, subSectionName);
+        
+                Node* subSection = new Node("subSection: " + subSectionName);
+        
+                section->addChild(subSection);
+            }
+
+            chapter->addChild(section);
+        }
+        book->addChild(chapter);
+    }
+
+    cout << "\n------------------------------------------------------------\n";
+    cout << "\n---Book Structure---\n";
+    displayTree(book);
+    cout << "\n------------------------------------------------------------\n";
+} 
