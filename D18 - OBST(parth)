@@ -1,0 +1,60 @@
+#include <iostream>
+using namespace std;
+
+int keys[100], freq[100];
+int cost[100][100], root[100][100], weight[100][100];
+
+void printInorder(int i, int j) {
+    if (i >= j) {
+        return;
+    }
+    int r = root[i][j];
+    printInorder(i, r - 1);
+    cout << keys[r] << " ";
+    printInorder(r, j);
+}
+
+int main() {
+    int n;
+    cout << "Enter the number of keys: ";
+    cin >> n;
+
+    for (int i = 1; i <= n; i++) {
+        cout << "Enter key " << i << ": ";
+        cin >> keys[i];
+        cout << "Enter the corresponding frequency of key: ";
+        cin >> freq[i];
+    }
+
+    // Initialize diagonal elements
+    for (int i = 0; i <= n; i++) {
+        cost[i][i] = 0;
+        weight[i][i] = 0;
+    }
+
+    // OBST construction
+    for (int l = 1; l <= n; l++) {
+        for (int i = 0; i <= n - l; i++) {
+            int j = i + l;
+            cost[i][j] = INT_MAX; 
+            weight[i][j] = weight[i][j - 1] + freq[j];
+
+            for (int k = i + 1; k <= j; k++) {
+                int c = cost[i][k - 1] + cost[k][j] + weight[i][j];
+                if (c < cost[i][j]) {
+                    cost[i][j] = c;
+                    root[i][j] = k;
+                }
+            }
+        }
+    }
+
+    cout << "\nOptimal Cost: " << cost[0][n] << endl;
+    cout << "Root: "<< root[0][n] << endl;
+
+    cout << "\nInorder Traversal of Optimal BST: ";
+    printInorder(0, n);
+    cout << endl;
+
+    return 0;
+}
