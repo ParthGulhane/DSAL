@@ -1,0 +1,100 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <stack>
+#include <queue> 
+
+using namespace std;
+
+typedef pair<int, int> pii;
+typedef vector<vector<int>> vvi;
+
+vvi edgesToAdjList(int V, vector<pii> edges){
+    vvi adj(V);
+    
+    for (int i = 0; i < edges.size(); i++){
+        int u = edges[i].first;
+        int v = edges[i].second;
+        adj[u].push_back(v);    
+    }
+
+    return adj;
+}
+
+void bfs(vvi adj, int V){
+    queue<int> q;
+    q.push(0);
+
+    vector<bool> vis(V, false);
+    vis[0] = true;
+
+    cout << "\n----------------------------------------\n";
+    cout << "Breadth-First Search: ";
+    
+    while (!q.empty()){
+        int node = q.front();
+        q.pop();
+        
+        cout << node << ' ';
+        
+        for (int next : adj[node]){
+            if (!vis[next]){
+                q.push(next);
+                vis[next] = true;
+            }
+        }
+    }
+    cout << endl;
+    cout << "\n----------------------------------------\n";
+}
+
+void dfsUtil(vector<bool>& vis, vvi adj, int node){
+    vis[node] = true;
+    cout << node << ' ';
+    
+    for (int next : adj[node]){
+        if (!vis[next]){
+            dfsUtil(vis, adj, next);
+        }
+    }
+}
+
+void dfs(vvi adj, int V){
+   
+    vector<bool> vis(V, false);
+
+    cout << "\n----------------------------------------\n";
+    cout << "Depth-First Search: ";
+    
+    for (int i = 0; i < V; i++){
+        if (!vis[i]){
+            dfsUtil(vis, adj, i);
+        }
+    }
+    cout << endl;
+    cout << "\n----------------------------------------\n";
+} 
+
+int main() {
+    int E, V;
+    cout << "Enter number of vertices: "; cin >> V;
+    cout << "Enter number of edges: "; cin >> E;
+
+    vector<pii> edges;
+    for (int i = 0; i < E; i++){
+        int u,v;
+        cout << "Enter " << i + 1 << " edge: "; cin >> u >> v;
+        edges.push_back({u,v});
+    }
+
+    vvi adj = edgesToAdjList(V, edges);
+    int choice;
+
+    cout << "Enter choice of traversal: " << endl
+         << "1. DFS" << endl  
+         << "2. BFS" << endl;
+    cin >> choice;         
+    
+    if (choice == 1) dfs(adj, V);
+    else bfs(adj, V);         
+}
