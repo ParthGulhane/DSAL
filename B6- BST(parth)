@@ -147,3 +147,5 @@ int main() {
     t.menu();
     return 0;
 }
+
+// 5 3 1 4 9 6 10 
